@@ -26,7 +26,7 @@ impl std::fmt::Debug for Trafic {
     }    
 }
 
-fn trafic()->String{
+fn trafic()->Trafic{
     let mut var_traf = Trafic{
         rx: 0.0,
         tx: 0.0,
@@ -64,21 +64,34 @@ fn trafic()->String{
     if !flag{
         exit(0)
     }
-    format!("{:#?}",var_traf)
-    
+    var_traf
 
 
 }
 
 fn main() {
    let sleep = Duration::from_secs(1);
+    let mut o_traf = Trafic{
+        rx: 0.0,
+        tx: 0.0,
+        str: "".to_string()
+    };
    loop {
-        let out=trafic();
+        let traf=trafic();
+        let mut rx_speed_s=0.00;
+        let mut tx_speed_s=0.00;
+        if o_traf.rx!=0.0 {
+            rx_speed_s=traf.rx-o_traf.rx;
+            tx_speed_s=traf.tx-o_traf.tx;
+        }
+        o_traf=traf.clone();
+        let out= format!("{:#?} rx:{:.2}Mb/s tx:{:.2}Mb/s",traf, rx_speed_s, tx_speed_s);
+        
         let path = "/tmp/traficdim_sv";
         let mut output = File::create(path).unwrap();
-        write!(output, "{}", out);//.expect_err("ошибка вывода в файл");
+        write!(output, "{}", out).expect("ошибка вывода в файл");
         
-//        println!("{:?}",out);
+     //   println!("{}",out);
        std::thread::sleep(sleep);
    }
 }
